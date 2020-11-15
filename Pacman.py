@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import Canvas
 import os
 from src.user import program_init_user
+import time
 
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -26,51 +27,72 @@ class mapping():
         posy = 0
         for block in tile_map:
             if (block == '1'):
-                canvas.create_rectangle(posx, posy, posx + 40, posy + 40, fill='black')
+                canvas.create_rectangle(posx, posy, posx + 40, posy + 40, fill='white')
             posx += 40
             if (posx >= 800):
                 posy += 40
                 posx = 0
 
 class Player():
-    def __init__(self):
-        self.posx = 7
-        self.posy = 7
-        self.change_pos = 20
-        self.rect = [self.posx, self.posy, 13, 13]
+    def __init__(self, canvas):
+        self.sprite = None
+        self.frame = 0
+        self.pacman = None
+        self.posPacman = [0, 0]
+        self.keyActu = 'Left'
+        self.canvas = canvas
+        self.keypress = time.monotonic_ns()
 
-    def animation(self):
-        global sprite_sheet
-        self.rect.x += self.change_pos
-        if (self.rect.x >= (2 * self.change_pos)):
-            self.rect.x = self.posx
-        sprite_sheet.rect()
+    def animate(self, event):
+        global IA_params
+        Key = event.keysym
 
+        if (time.monotonic_ns() - self.keypress >= 200000000):
+            if Key == 'Up':
+                self.posPacman[1] -= 40
+                self.keyActu = 'Up'
+            elif Key == 'Down':
+                self.posPacman[1] += 40
+                self.keyActu = 'Down'
+            elif Key == 'Left':
+                self.posPacman[0] -= 40
+                self.keyActu = 'Left'
+            elif Key == 'Right':
+                self.posPacman[0] += 40
+                self.keyActu = 'Right'
+            self.keypress = time.monotonic_ns()
+
+        IA_params.set_player_pos(self.posPacman)
+
+    def update_pacman(self):
+        if self.sprite != None:
+            self.canvas.delete(self.sprite)
+        self.pacman = tk.PhotoImage(file = "images/gif/pacman{}.gif".format(self.keyActu), format="gif -index {}".format(self.frame))
+        self.sprite = self.canvas.create_image(self.posPacman[0], self.posPacman[1], anchor=tk.NW, image=self.pacman)
+        self.frame += 1
+        if self.frame == 3:
+            self.frame = 0
 
 class Ghost():
-    def __init__(self):
-        self.posx = 127
-        self.red_posy = 87
-        self.pink_posy = 107
-        self.blue_posy = 127
-        self.orange_posy = 147
-        self.change_pos = 20
-        self.rect = None
+    def __init__(self, color):
+        self.color = color
+        self.sprite = None
+        self.frame = 0
+        self.pos_ghost = [0, 0]
 
-    def animation(self):
-        self.rect.x += self.change_pos
-        if (self.rect.x >= (2 * self.change_pos)):
-            self.rect.x = self.posx
+    def update_ghost(self, canvas):
+        global IA_params
 
-    def init_ghost(self, color):
-        if (color == "red"):
-            self.rect = [self.posx, self.red_posy, 14, 14]
-        elif (color == "pink"):
-            self.rect = [self.posx, self.pink_posy, 14, 14]
-        elif (color == "blue"):
-            self.rect = [self.posx, self.blue_posy, 14, 14]
-        else:
-            self.rect = [self.posx, self.orange_posy, 14, 14]
+        self.pos_ghost = IA_params.get_ia_ghost_pos(self.color)
+        
+        if self.sprite != None:
+            canvas.delete(self.sprite)
+        
+        self.pacman = tk.PhotoImage(file = "images/gif/ghost{}.gif".format(self.color), format="gif -index {}".format(self.frame))
+        self.sprite = canvas.create_image(self.pos_ghost[0], self.pos_ghost[1], anchor=tk.NW, image=self.pacman)
+        self.frame += 1
+        if self.frame == 2:
+            self.frame = 0
 
 gui = tk.Tk()
 gui.geometry(str(size_window_x) + "x" + str(size_window_y))
@@ -83,23 +105,28 @@ if "nt" == os.name:
 else:
     gui.wm_iconbitmap(bitmap = "@images/logo.xbm")
 
-#sprite_sheet = tk.PhotoImage(file = "images/pacman.png")
-
-canvas = Canvas(gui, width = size_window_x, height = size_window_y, bd = 0, bg = "white")
+canvas = Canvas(gui, width = size_window_x, height = size_window_y, bd = 0, bg = "black")
 canvas.pack(padx = 0, pady = 0)
 canvas.focus_set()
 
 obj_map = mapping()
 obj_map.draw_map(canvas)
 
-player = Player()
-Red_Ghost = Ghost()
-Pink_Ghost = Ghost()
-Blue_Ghost = Ghost()
-Orange_Ghost = Ghost()
+player = Player(canvas)
+Red_Ghost = Ghost("Red")
+Pink_Ghost = Ghost("Pink")
+Blue_Ghost = Ghost("Blue")
+Orange_Ghost = Ghost("Orange")
+
+canvas.bind('<Key>', player.animate)
 
 def game_loop():
-
+    player.update_pacman()
+    Red_Ghost.update_ghost(canvas)
+    Pink_Ghost.update_ghost(canvas)
+    Blue_Ghost.update_ghost(canvas)
+    Orange_Ghost.update_ghost(canvas)
+    
     gui.after(75, game_loop)
 
 gui.after_idle(game_loop)

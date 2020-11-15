@@ -5,5 +5,14 @@ class launch_ia():
         self.info = user()
         return
 
-    def program_IA(self):
+    def Blue_Ghost(self):
+        return
+
+    def Green_Ghost(self):
+        return
+
+    def Red_Ghost(self):
+        return
+
+    def Pink_Ghost(self):
         return
