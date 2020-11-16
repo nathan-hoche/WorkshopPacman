@@ -3,10 +3,10 @@ tile_map = None
 player_pos = [0, 0]
 block_size = 40
 
-ghost_pos_red = [0, 0]
-ghost_pos_pink = [0, 0]
-ghost_pos_blue = [0, 0]
-ghost_pos_orange = [0, 0]
+ghost_pos_red = [400, 400]
+ghost_pos_pink = [440, 400]
+ghost_pos_blue = [480, 400]
+ghost_pos_orange = [440, 440]
 
 class user():
     def __init__(self):
@@ -85,13 +85,13 @@ class program_init_user():
         return
 
     def get_ia_ghost_pos(self, ghost_type):
-        if (ghost_type == "red"):
+        if (ghost_type == "Red"):
             global ghost_pos_red
             return ghost_pos_red
-        elif (ghost_type == "pink"):
+        elif (ghost_type == "Pink"):
             global ghost_pos_pink
             return ghost_pos_pink
-        elif (ghost_type == "blue"):
+        elif (ghost_type == "Blue"):
             global ghost_pos_blue
             return ghost_pos_blue
         else:

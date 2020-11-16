@@ -14,6 +14,7 @@ size_window_y = 840
 
 fd = open("maps/map_1.txt", "r")
 tile_map = fd.read()
+split_tile_map = tile_map.split('\n')
 
 IA_params = program_init_user()
 IA_params.set_map(tile_map)
@@ -38,28 +39,46 @@ class Player():
         self.sprite = None
         self.frame = 0
         self.pacman = None
-        self.posPacman = [0, 0]
+        self.posPacman = [40, 40]
+        self.posPacmanMap = [1, 1]
         self.keyActu = 'Left'
         self.canvas = canvas
         self.keypress = time.monotonic_ns()
 
     def animate(self, event):
         global IA_params
+        global split_tile_map
         Key = event.keysym
 
         if (time.monotonic_ns() - self.keypress >= 200000000):
             if Key == 'Up':
-                self.posPacman[1] -= 40
-                self.keyActu = 'Up'
+                val2 = int(split_tile_map[self.posPacmanMap[0] - 1][self.posPacmanMap[1]])
+
+                if (val2 == 0):
+                    self.posPacman[0] -= 40
+                    self.posPacmanMap[0] -= 1
+                    self.keyActu = 'Up'
             elif Key == 'Down':
-                self.posPacman[1] += 40
-                self.keyActu = 'Down'
+                val2 = int(split_tile_map[self.posPacmanMap[0] + 1][self.posPacmanMap[1]])
+                
+                if (val2 == 0):
+                    self.posPacman[0] += 40
+                    self.posPacmanMap[0] += 1
+                    self.keyActu = 'Down'
             elif Key == 'Left':
-                self.posPacman[0] -= 40
-                self.keyActu = 'Left'
+                val2 = int(split_tile_map[self.posPacmanMap[0]][self.posPacmanMap[1] - 1])
+                
+                if (val2 == 0):
+                    self.posPacman[1] -= 40
+                    self.posPacmanMap[1] -= 1
+                    self.keyActu = 'Left'
             elif Key == 'Right':
-                self.posPacman[0] += 40
-                self.keyActu = 'Right'
+                val2 = int(split_tile_map[self.posPacmanMap[0]][self.posPacmanMap[1] + 1])
+                
+                if (val2 == 0):
+                    self.posPacman[1] += 40
+                    self.posPacmanMap[1] += 1
+                    self.keyActu = 'Right'
             self.keypress = time.monotonic_ns()
 
         IA_params.set_player_pos(self.posPacman)
@@ -68,7 +87,7 @@ class Player():
         if self.sprite != None:
             self.canvas.delete(self.sprite)
         self.pacman = tk.PhotoImage(file = "images/gif/pacman{}.gif".format(self.keyActu), format="gif -index {}".format(self.frame))
-        self.sprite = self.canvas.create_image(self.posPacman[0], self.posPacman[1], anchor=tk.NW, image=self.pacman)
+        self.sprite = self.canvas.create_image(self.posPacman[1], self.posPacman[0], anchor=tk.NW, image=self.pacman)
         self.frame += 1
         if self.frame == 3:
             self.frame = 0
@@ -126,7 +145,7 @@ def game_loop():
     Pink_Ghost.update_ghost(canvas)
     Blue_Ghost.update_ghost(canvas)
     Orange_Ghost.update_ghost(canvas)
-    
+       
     gui.after(75, game_loop)
 
 gui.after_idle(game_loop)
