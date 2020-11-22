@@ -3,19 +3,18 @@
 </h1>
 
 <p align="center">
-    <img width="500" height="300" src="https://www.hiig.de/wp-content/uploads/2014/11/Pong-1200x800.jpg">
+    <img width="1200" height="300" src="https://upload.wikimedia.org/wikipedia/fr/thumb/a/a2/Pac-Man_Logo.svg/1280px-Pac-Man_Logo.svg.png">
 </p>
 <br>
 
 <h3 align="center">
-    The goal of this workshop is to create your first artificial intelligence capable of winning at Pong every time.
+    The goal of this workshop is to create the artificial intelligence of all pacman's ghost.
 </h3>
 <br><br>
 
-### **What's Pong?**
+### **What's Pacman?**
 
-Pong is one of the first arcade video games and the first sports arcade video game.<br>
-The game is inspired by table tennis in top view, and each player competes by moving the virtual racket up and down, via a rotary button, to keep the ball in the playing field. The player can change the direction of the ball depending on where the ball hits the racket, while its speed gradually increases during the round.<br><br>
+Pac-Man, an emblematic character in the history of video games, is a character in the shape of a yellow circle with a mouth. He has to eat pac-gums in a maze haunted by four ghosts.<br>
 
 ### **What's an AI?**
 
@@ -26,12 +25,12 @@ Often classified in the cognitive sciences group, it involves computational neur
 
 In a first time, you need to clone the workshop repo with:
 ```
-git clone git@github.com:nathan-hoche/Worshop_IA_Pong.git
+git clone git@github.com:nathan-hoche/WorshopPacman.git
 ```
 
 Now you can launch the game with:
 ```
-python3 Pong.py
+python3 Pacman.py
 ```
 
 > You need tkinter module for this workshop.<br>
@@ -49,32 +48,50 @@ You can use all this command to program the AI:
 
 > All of this commands is present in user module.
 
-* This function returns the position of your ball
+* This function returns the size of your screen
 ```python
-get_pos()
+get_size_screen()
 ```
-* This function returns the speed of your ball
+* This function returns the position of player
 ```python
-get_speed()
+get_pos_player()
 ```
-* This function returns the position of your bar
+* This function returns map
 ```python
-get_bar_pos()
+get_map()
 ```
-* This function moves the pong bar upwards.
+* This function moves the ghost upwards ( set the color of ghost )
 ```python
-up_ia_bar()
+move_ghost_up()
 ```
-* This function moves the pong bar down.
+* This function moves the ghost down ( set the color of ghost )
 ```python
-down_ia_bar()
+move_ghost_down()
+```
+* This function moves the ghost letf ( set the color of ghost )
+```python
+move_ghost_left()
+```
+* This function moves the ghost right ( set the color of ghost )
+```python
+move_ghost_right()
 ```
 
 <br><br>
 
 # **Objective**
 
-The goal of the project is to code the artificial intelligence of a Pong game which must win every time and for that it is necessary to modify the "IA.py".<br>
+The goal of the project is to code the artificial intelligence of a Pacman game which must win every time and for that it is necessary to modify the "IA.py". The particularity is that there are four different AI coded for each ghost independently.
+
+Each ghost has its own behavior:
+
+    Blinky (RED) attacks directly Pac Man. He follows Pac-Man like his shadow.
+    Pinky tends (PINK) to ambush. She aims at where Pac-Man is going to be.
+    Inky (BLUE) is capricious. From time to time, he leaves in the opposite direction to Pac-Man.
+    Clyde (ORANGE) feigns indifference. From time to time, he chooses a direction at random (which can be that of Pac-Man).
+
+> As for Clyde, the orange ghost, his movement seems purely random, but some clever guys who dissected the game's source code realized that he always leaves towards the lower left corner of the board when he's too close to Pac-Man.<br>
+
 Like this example:<br>
 
 ## **Exemple**
@@ -85,27 +102,30 @@ from src.user import user
 class launch_ia():
     def __init__(self):
         self.info = user()
-        self.nb = 10
+        self.x1 = 0
         return
 
-    def program_IA(self):
-        if (self.nb != 0):
-            self.info.down_ia_bar()
-            self.nb -= 1
-            print(self.info.get_speed())
-            print(self.info.get_pos())
-        return
+    def main_ia(self):
+        if (self.x1 == 0):
+            self.info.move_ghost_up("Red")
+            self.info.move_ghost_up("Blue")
+            self.info.move_ghost_up("Orange")
+            self.info.move_ghost_up("Pink")
+            self.x1 = 1
+        else:
+            self.x1 = 0
+            self.info.move_ghost_left("Red")
+            self.info.move_ghost_left("Blue")
+            self.info.move_ghost_left("Pink")
+            self.info.move_ghost_left("Orange")
 ```
 > Don't touch other file to programm the AI.
 
 # **Tips**
 
 Here is the size of the different elements:<br>
-* The Arena: 800 x 500
-* The ball: 20 x 20
-* The bar: 20 x 100<br><br>
-
-You can move the player's bar with key up and down.
+* The Arena: 760 x 840
+* Block's size: 40 x 40
 
 <br><br>
 
@@ -115,5 +135,6 @@ You can move the player's bar with key up and down.
 Here are some examples to go further in the workshop:
 
 * Continue the AI to beat all the players
-* Complete and personalize the Pong
-* Do a pong screensaver
+* Complete and personalize the Pacman
+* Recoded the AI of pacman
+* Add effects ( musique, level, score... )
