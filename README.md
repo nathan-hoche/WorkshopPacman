@@ -25,7 +25,7 @@ Often classified in the cognitive sciences group, it involves computational neur
 
 In a first time, you need to clone the workshop repo with:
 ```
-git clone git@github.com:nathan-hoche/WorshopPacman.git
+git clone git@github.com:nathan-hoche/WorkshopPacman.git
 ```
 
 Now you can launch the game with:
